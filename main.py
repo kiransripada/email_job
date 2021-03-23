@@ -21,7 +21,7 @@ def job():
         #server.connect("smtp.gmail.com", 587)
         #server.helo()
         server.starttls(context=context)
-        server.login("kiran.sripada.sherwin@gmail.com", password)
+        server.login("youremail@gmail.com", password)
         server.sendmail(sender_email, receiver_email, message)
 
     except Exception as e:

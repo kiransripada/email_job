@@ -33,12 +33,12 @@ def job():
         for name, email, dob in reader:
             print(f"Iterate over email add csv")
             today = datetime.datetime.now().strftime('%Y-%m-%d')
-            date_diff = days_between(dob, today)
-            print(f"number diff {date_diff}")
+            is_birthday = days_between(dob, today)
             ##send email if dob is today
-            if date_diff == 0:
+            if is_birthday:
                 print(f"Sending email to {name} with  {dob}")
-                server.sendmail(sender_email, email, message)
+                msgRoot = generate_html_msg(name)
+                server.sendmail(sender_email, email, msgRoot.as_string())
 
     except Exception as e:
         print(e)
@@ -50,11 +50,43 @@ def job():
 # Ref https://pypi.org/project/schedule/
 # schedule.every(10).seconds.do(job)
 ##If you wan to send email every day at 8:00 , uncomment below line
-
 def days_between(d1, d2):
-    d1 = datetime.datetime.strptime(d1, "%Y-%m-%d")
-    d2 = datetime.datetime.strptime(d2, "%Y-%m-%d")
-    return abs((d2 - d1).days)
+    d1 = datetime.datetime.strptime(d1, "%Y-%m-%d").date()
+    d1 = str(d1.month) + str(d1.day)
+    d2 = datetime.datetime.strptime(d2, '%Y-%m-%d').date()
+    d2 = str(d2.month) + str(d2.day)
+    if d1 == d2:
+        return True
+    else:
+        return False
+
+
+def generate_html_msg(name):
+    msgRoot = MIMEMultipart('related')
+    msgRoot['Subject'] = 'Our birthday greetings makes you happy'
+
+    msgAlternative = MIMEMultipart('alternative')
+    msgRoot.attach(msgAlternative)
+
+    msgText = MIMEText('This is the alternative plain text message.')
+    msgAlternative.attach(msgText)
+
+    msgText = MIMEText(
+        f'<b> <font face = "Comic sans MS" size =" 4"><h3 style="color:purple;"><br>Dear {name} <br> We are grateful '
+        f'that you are a part of our team.May life’s brightest joys illuminate your path,and may each day’s journey '
+        f'bring you closer to your dreams.<br></h3></font></b><br><img src="cid:image1"><br>\n <b><h3 '
+        f'style="color:purple;"><font face = "Comic sans MS" size ="5">Team Super Sparklers</h3></font></b>',
+        'html')
+    msgAlternative.attach(msgText)
+
+    fp = open('bdy.png', 'rb')
+    msgImage = MIMEImage(fp.read())
+    fp.close()
+
+    # Define the image's ID as referenced above
+    msgImage.add_header('Content-ID', '<image1>')
+    msgRoot.attach(msgImage)
+    return msgRoot
 
 schedule.every(10).seconds.do(job)
 

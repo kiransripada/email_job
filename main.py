@@ -3,6 +3,9 @@ import time
 import smtplib, ssl
 import csv
 import datetime
+from email.mime.image import MIMEImage
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 port = 465  # For SSL
 password = input("Type your password and press enter: ")
@@ -63,7 +66,7 @@ def days_between(d1, d2):
 
 def generate_html_msg(name):
     msgRoot = MIMEMultipart('related')
-    msgRoot['Subject'] = 'Our birthday greetings makes you happy'
+    msgRoot['Subject'] = ' Happy Birthday'
 
     msgAlternative = MIMEMultipart('alternative')
     msgRoot.attach(msgAlternative)
@@ -73,9 +76,7 @@ def generate_html_msg(name):
 
     msgText = MIMEText(
         f'<b> <font face = "Comic sans MS" size =" 4"><h3 style="color:purple;"><br>Dear {name} <br> We are grateful '
-        f'that you are a part of our team.May life’s brightest joys illuminate your path,and may each day’s journey '
-        f'bring you closer to your dreams.<br></h3></font></b><br><img src="cid:image1"><br>\n <b><h3 '
-        f'style="color:purple;"><font face = "Comic sans MS" size ="5">Team Super Sparklers</h3></font></b>',
+        f'test/b>',
         'html')
     msgAlternative.attach(msgText)
 
